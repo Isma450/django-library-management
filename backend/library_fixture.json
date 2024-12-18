@@ -1,0 +1,182 @@
+[
+  {
+    "model": "api.publishers",
+    "pk": 1,
+    "fields": {
+      "name": "Penguin Books",
+      "company_name": "Penguin Publishing Group",
+      "address": "123 Main Street",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001",
+      "telephone": "123-456-7890",
+      "fax": "123-456-7891",
+      "comments": "Leading publisher in the US."
+    }
+  },
+  {
+    "model": "api.publishers",
+    "pk": 2,
+    "fields": {
+      "name": "HarperCollins",
+      "company_name": "HarperCollins Group",
+      "address": "456 High Street",
+      "city": "London",
+      "state": "LDN",
+      "zip": "SW1A 1AA",
+      "telephone": "987-654-3210",
+      "fax": "987-654-3211",
+      "comments": "Top publisher in the UK."
+    }
+  },
+  {
+    "model": "api.publishers",
+    "pk": 3,
+    "fields": {
+      "name": "Gallimard",
+      "company_name": "Editions Gallimard",
+      "address": "5 rue Gaston-Gallimard",
+      "city": "Paris",
+      "state": "FR",
+      "zip": "75007",
+      "telephone": "01-44-39-33-00",
+      "fax": "01-44-39-33-01",
+      "comments": "Renowned French publisher."
+    }
+  },
+  {
+    "model": "api.publishers",
+    "pk": 4,
+    "fields": {
+      "name": "Hachette Livre",
+      "company_name": "Hachette Publishing",
+      "address": "43 Quai de Grenelle",
+      "city": "Paris",
+      "state": "FR",
+      "zip": "75015",
+      "telephone": "01-45-78-67-00",
+      "fax": "01-45-78-67-01",
+      "comments": "Major global publisher."
+    }
+  },
+  {
+    "model": "api.publishers",
+    "pk": 5,
+    "fields": {
+      "name": "Simon & Schuster",
+      "company_name": "Simon & Schuster Inc.",
+      "address": "123 Fictional Ave",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "90001",
+      "telephone": "213-555-0101",
+      "fax": "213-555-0102",
+      "comments": "Publisher of many bestsellers."
+    }
+  },
+  {
+    "model": "api.author",
+    "pk": 1,
+    "fields": { "author": "Jules Verne", "year_born": 1828 }
+  },
+  {
+    "model": "api.author",
+    "pk": 2,
+    "fields": { "author": "Mark Twain", "year_born": 1835 }
+  },
+  {
+    "model": "api.author",
+    "pk": 3,
+    "fields": { "author": "George Orwell", "year_born": 1903 }
+  },
+  {
+    "model": "api.author",
+    "pk": 4,
+    "fields": { "author": "Victor Hugo", "year_born": 1802 }
+  },
+  {
+    "model": "api.author",
+    "pk": 5,
+    "fields": { "author": "Jane Austen", "year_born": 1775 }
+  },
+  {
+    "model": "api.author",
+    "pk": 6,
+    "fields": { "author": "Leo Tolstoy", "year_born": 1828 }
+  },
+  {
+    "model": "api.author",
+    "pk": 7,
+    "fields": { "author": "Charles Dickens", "year_born": 1812 }
+  },
+  {
+    "model": "api.author",
+    "pk": 8,
+    "fields": { "author": "F. Scott Fitzgerald", "year_born": 1896 }
+  },
+  {
+    "model": "api.author",
+    "pk": 9,
+    "fields": { "author": "Herman Melville", "year_born": 1819 }
+  },
+  {
+    "model": "api.author",
+    "pk": 10,
+    "fields": { "author": "Gabriel García Márquez", "year_born": 1927 }
+  },
+  {
+    "model": "api.author",
+    "pk": 11,
+    "fields": { "author": "Ernest Hemingway", "year_born": 1899 }
+  },
+  {
+    "model": "api.author",
+    "pk": 12,
+    "fields": { "author": "Arthur Conan Doyle", "year_born": 1859 }
+  },
+  {
+    "model": "api.title",
+    "pk": 1,
+    "fields": {
+      "isbn": "978-3-16-148410-0",
+      "title": "Twenty Thousand Leagues Under the Sea",
+      "year_published": 1870,
+      "pubid": 1,
+      "description": "A sci-fi underwater adventure.",
+      "notes": "Classic edition",
+      "subject": "Adventure",
+      "comments": "Timeless novel.",
+      "authors": [1]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 2,
+    "fields": {
+      "isbn": "978-0-06-112008-4",
+      "title": "The Adventures of Tom Sawyer",
+      "year_published": 1876,
+      "pubid": 2,
+      "description": "A tale of youth and freedom.",
+      "notes": "First edition",
+      "subject": "Fiction",
+      "comments": "Must read.",
+      "authors": [2]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 3,
+    "fields": {
+      "isbn": "978-0-452-28423-4",
+      "title": "1984",
+      "year_published": 1949,
+      "pubid": 3,
+      "description": "A dystopian novel.",
+      "notes": "Second edition",
+      "subject": "Dystopia",
+      "comments": "Still relevant today.",
+      "authors": [3]
+    }
+  }
+]
