@@ -1,0 +1,88 @@
+# Python/Django
+*.py[cod]
+__pycache__/
+*.so
+.Python
+*.egg
+*.egg-info/
+.installed.cfg
+*.manifest
+.coverage
+.tox/
+.pytest_cache/
+htmlcov/
+.env
+venv/
+env/
+
+# Node/React
+node_modules/
+dist/
+dist-ssr/
+build/
+*.local
+.cache/
+.pnp/
+.pnp.js
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environnements
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE/Éditeurs
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Base de données
+*.sqlite3
+db.sqlite3
+
+# Média/Static
+media/
+static/
+!static/.gitkeep
+
+# Tests et couverture
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Documentation
+docs/_build/
+*.pyc
+
+# Dépendances
+node_modules/
+venv/
+env/
+__pycache__/
+
+# Build
+dist/
+build/
+*.egg-info/
+*.egg
+*.manifest
+*.spec
