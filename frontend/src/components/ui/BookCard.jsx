@@ -2,15 +2,41 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "../../context/AuthContext";
 
 const formatTitleToImagePath = (title) => {
   const formattedTitle = title.replace(/[^a-zA-Z0-9]/g, "").replace(/\s+/g, "");
   return `/images/${formattedTitle}.jpg`;
 };
 
+const handleReservation = async (bookId) => {
+  try {
+    const response = await fetch(`/books/${bookId}/reserve`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      console.log("Réservation effectuée avec succès");
+    } else {
+      console.error("Erreur lors de la réservation");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const BookCard = ({ book, index, hovered, setHovered }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const { user } = useAuth();
+  const bookId = book?.title_id || book?.id;
+
+  if (!bookId) {
+    console.error("L'identifiant du livre est introuvable");
+  }
 
   // Génère le chemin de l'image basé sur le titre
   const imagePath = formatTitleToImagePath(book.title);
@@ -57,13 +83,23 @@ export const BookCard = ({ book, index, hovered, setHovered }) => {
         </p>
         <p className="text-sm text-gray-400 line-clamp-2">{book.description}</p>
       </div>
+      {user && (
+        <button
+          onClick={() => handleReservation(bookId)}
+          className="absolute bottom-4 right-4 bg-primary-600 text-white px-4 py-2 rounded-full"
+        >
+          Réserver
+        </button>
+      )}
     </motion.div>
   );
 };
 
 BookCard.propTypes = {
   book: PropTypes.shape({
+    id: PropTypes.number,
     title: PropTypes.string.isRequired,
+    title_id: PropTypes.number,
     description: PropTypes.string,
     authors: PropTypes.arrayOf(
       PropTypes.shape({

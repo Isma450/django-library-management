@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { cn } from "../../lib/utils";
 
 const transition = {
   type: "spring",
@@ -41,6 +42,7 @@ MenuItem.propTypes = {
   active: PropTypes.string,
   item: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
+  className: PropTypes.string,
 };
 
 export const Menu = ({ setActive, children }) => {
@@ -57,13 +59,16 @@ export const Menu = ({ setActive, children }) => {
 Menu.propTypes = {
   setActive: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
+  className: PropTypes.string,
 };
-
-export const NavLink = ({ to, children }) => {
+export const NavLink = ({ to, children, className = "" }) => {
   return (
     <Link
       to={to}
-      className="text-neutral-700 dark:text-neutral-200 hover:text-black"
+      className={cn(
+        "text-neutral-700 dark:text-neutral-200 hover:text-black",
+        className
+      )}
     >
       {children}
     </Link>
@@ -74,8 +79,4 @@ NavLink.propTypes = {
   to: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-};
-
-NavLink.defaultProps = {
-  className: "",
 };

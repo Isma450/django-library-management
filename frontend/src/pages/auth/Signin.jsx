@@ -3,11 +3,51 @@ import { Label } from "../../components/ui/Label";
 import { Input } from "../../components/ui/input";
 import { cn } from "../../lib/utils";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export function SigninForm() {
-  const handleSubmit = (e) => {
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setCredentials((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+    // Réinitialiser l'erreur quand l'utilisateur tape
+    if (error) setError(null);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Connexion soumise");
+    setError(null);
+    setLoading(true);
+
+    // Validation
+    if (!credentials.email || !credentials.password) {
+      setError("Veuillez remplir tous les champs");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await login(credentials);
+      navigate("/");
+    } catch (error) {
+      setError(
+        error.response?.data?.detail ||
+          error.message ||
+          "Une erreur est survenue"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -24,20 +64,40 @@ export function SigninForm() {
             <Label htmlFor="email">Adresse email</Label>
             <Input
               id="email"
-              placeholder="jean.dupont@email.com"
               type="email"
+              value={credentials.email}
+              onChange={handleChange}
+              placeholder="jean.dupont@email.com"
+              required
+              disabled={loading}
             />
           </LabelInputContainer>
           <LabelInputContainer className="mb-8">
             <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" placeholder="••••••••" type="password" />
+            <Input
+              id="password"
+              type="password"
+              value={credentials.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              required
+              disabled={loading}
+            />
           </LabelInputContainer>
 
+          {error && (
+            <div className="mb-4 text-sm text-red-500 text-center">{error}</div>
+          )}
+
           <button
-            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset]"
+            className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 
+            dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white 
+            rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset]
+            ${loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"}`}
             type="submit"
+            disabled={loading}
           >
-            Se connecter
+            {loading ? "Connexion..." : "Se connecter"}
             <BottomGradient />
           </button>
         </form>
@@ -51,7 +111,6 @@ export function SigninForm() {
     </div>
   );
 }
-
 const BottomGradient = () => {
   return (
     <>

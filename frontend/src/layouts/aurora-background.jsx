@@ -3,7 +3,7 @@ import { cn } from "../lib/utils";
 import PropTypes from "prop-types";
 
 export const AuroraBackground = ({
-  className,
+  className = "",
   children,
   showRadialGradient = true,
 }) => {
@@ -48,9 +48,4 @@ AuroraBackground.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node.isRequired,
   showRadialGradient: PropTypes.bool,
-};
-
-AuroraBackground.defaultProps = {
-  className: "",
-  showRadialGradient: true,
 };
