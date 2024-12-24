@@ -21,6 +21,7 @@ urlpatterns = [
     path('login/', views.connexion, name='connexion'),
     path('logout/', views.LogoutView.as_view(), name='deconnexion'),
     path('signup/', views.inscription, name='inscription'),
+    path('users/me/', views.user_profile, name='user-profile'),
     path('', include(router.urls)),
     path('api/user/register/', views.CreateUserView.as_view(), name="register"),
 ]

@@ -169,6 +169,12 @@ def connexion(request):
             return Response({"error": "Incorrect email or password."}, status=status.HTTP_400_BAD_REQUEST)
     return Response({"message": "Send a POST request with 'username' and 'password'."}, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    """Récupérer les informations de l'utilisateur connecté"""
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
 
 # @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
