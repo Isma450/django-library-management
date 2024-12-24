@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
 from api.views import CreateUserView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from api.views import CreateUserView, CustomTokenObtainPairView, RefreshAccessTokenView
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/user/register/", CreateUserView.as_view(), name="register"),
-    path("api/v1/token/", TokenObtainPairView.as_view(), name="get_token"),
-    path("api/v1/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
+   path("api/v1/token/", CustomTokenObtainPairView.as_view(), name="get_token"),  # Custom view
+    path("api/v1/token/refresh-access/", RefreshAccessTokenView.as_view(), name="refresh_access_token"),  # Custom view
     path("api/v1/auth/", include("rest_framework.urls")),  
     path("api/v1/", include("api.urls")), 
 ]

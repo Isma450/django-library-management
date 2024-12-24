@@ -19,7 +19,7 @@ urlpatterns = [
     path('all-publishers/', views.liste_editeurs, name='liste_editeurs'),
     path('my-reservations/', views.mes_reservations, name='mes_reservations'),
     path('login/', views.connexion, name='connexion'),
-    path('logout/', views.deconnexion, name='deconnexion'),
+    path('logout/', views.LogoutView.as_view(), name='deconnexion'),
     path('signup/', views.inscription, name='inscription'),
     path('', include(router.urls)),
     path('api/user/register/', views.CreateUserView.as_view(), name="register"),

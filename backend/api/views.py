@@ -16,6 +16,12 @@ from .models import Author, Title, Publishers, Reservation, User
 from .serializers import AuthorSerializer, PublishersSerializer, TitleSerializer, UserSerializer, ReservationSerializer
 from .forms import CustomUserCreationForm
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 # PAGE D'ACCUEIL - accessible à tous
 @api_view(['GET'])
@@ -164,11 +170,20 @@ def connexion(request):
     return Response({"message": "Send a POST request with 'username' and 'password'."}, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def deconnexion(request):
-    logout(request)
-    return Response({"message": "You are now logged out."}, status=status.HTTP_200_OK)
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def deconnexion(request):
+#     def post(self, request):
+#         response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+#         response.delete_cookie("refresh_token")
+#         return response
+
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+        response.delete_cookie("refresh_token")
+        return response
+
 
 
 # VIEWSETS
@@ -270,3 +285,42 @@ class ReservationViewSet(viewsets.ModelViewSet):
             raise ValidationError("You cannot cancel this reservation because it does not belong to you.")
         self.perform_destroy(instance)
         return Response({"message": "Reservation successfully canceled."}, status=status.HTTP_200_OK)
+
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        data = response.data
+
+        access_token = data.get("access")
+        refresh_token = data.get("refresh")
+
+        # Ajouter le refresh token au cookie
+        res = Response({"access": access_token}, status=status.HTTP_200_OK)
+        res.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=True,  
+            samesite="Strict",  
+            max_age=86400,  
+        )
+        return res
+
+
+
+class RefreshAccessTokenView(APIView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response({"error": "No refresh token provided"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            token = RefreshToken(refresh_token)
+            access_token = str(token.access_token)
+
+            return Response({"access": access_token}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
