@@ -3,40 +3,65 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useAuth } from "../../context/AuthContext";
+import { useReservations } from "../../context/ReservationContext";
+import api from "../../services/api";
 
+// src/components/ui/BookCard.jsx
 const formatTitleToImagePath = (title) => {
-  const formattedTitle = title.replace(/[^a-zA-Z0-9]/g, "").replace(/\s+/g, "");
+  if (!title) return "/images/default-book.jpg";
+
+  const formattedTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .replace(/\s+/g, "");
+
   return `/images/${formattedTitle}.jpg`;
 };
 
-const handleReservation = async (bookId) => {
-  try {
-    const response = await fetch(`/books/${bookId}/reserve`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok) {
-      console.log("Réservation effectuée avec succès");
-    } else {
-      console.error("Erreur lors de la réservation");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export const BookCard = ({ book, index, hovered, setHovered }) => {
+export const BookCard = ({ book, index, hovered, setHovered, onAlert }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [reservationLoading, setReservationLoading] = useState(false);
+  const [reservationSuccess, setReservationSuccess] = useState(false);
   const { user } = useAuth();
   const bookId = book?.title_id || book?.id;
 
-  if (!bookId) {
-    console.error("L'identifiant du livre est introuvable");
-  }
+  const { canReserveMore, userReservations, fetchUserReservations } =
+    useReservations();
+
+  const isAlreadyReserved = userReservations?.some(
+    (reservation) => reservation.book.title_id === bookId
+  );
+
+  const handleReservation = async () => {
+    if (!canReserveMore()) {
+      onAlert({
+        type: "error",
+        message: "Vous ne pouvez pas réserver plus de 3 livres à la fois",
+      });
+      return;
+    }
+
+    setReservationLoading(true);
+    try {
+      await api.post(`/books/${bookId}/reserver/`);
+      setReservationSuccess(true);
+      await fetchUserReservations();
+      onAlert({
+        type: "success",
+        message: "Livre réservé avec succès !",
+      });
+      setTimeout(() => setReservationSuccess(false), 2000);
+    } catch (error) {
+      onAlert({
+        type: "error",
+        message: "Erreur lors de la réservation",
+      });
+      console.error("Erreur de réservation:", error);
+    } finally {
+      setReservationLoading(false);
+    }
+  };
 
   // Génère le chemin de l'image basé sur le titre
   const imagePath = formatTitleToImagePath(book.title);
@@ -84,12 +109,38 @@ export const BookCard = ({ book, index, hovered, setHovered }) => {
         <p className="text-sm text-gray-400 line-clamp-2">{book.description}</p>
       </div>
       {user && (
-        <button
-          onClick={() => handleReservation(bookId)}
-          className="absolute bottom-4 right-4 bg-primary-600 text-white px-4 py-2 rounded-full"
+        <motion.button
+          onClick={handleReservation}
+          disabled={
+            reservationLoading || reservationSuccess || isAlreadyReserved
+          }
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`absolute bottom-4 right-4 px-4 py-2 rounded-full transition-colors ${
+            isAlreadyReserved
+              ? "bg-gray-500 text-white cursor-not-allowed"
+              : reservationSuccess
+              ? "bg-green-500 text-white"
+              : reservationLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary-600 text-white hover:bg-primary-700"
+          }`}
         >
-          Réserver
-        </button>
+          {isAlreadyReserved ? (
+            "Déjà réservé"
+          ) : reservationSuccess ? (
+            "Réservé ✓"
+          ) : reservationLoading ? (
+            <span className="flex items-center">
+              <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                {/* ... SVG existant ... */}
+              </svg>
+              Réservation...
+            </span>
+          ) : (
+            "Réserver"
+          )}
+        </motion.button>
       )}
     </motion.div>
   );
@@ -110,4 +161,5 @@ BookCard.propTypes = {
   index: PropTypes.number.isRequired,
   hovered: PropTypes.number,
   setHovered: PropTypes.func.isRequired,
+  onAlert: PropTypes.func.isRequired,
 };

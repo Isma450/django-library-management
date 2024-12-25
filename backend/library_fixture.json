@@ -178,5 +178,110 @@
       "comments": "Still relevant today.",
       "authors": [3]
     }
+  },
+  {
+    "model": "api.title",
+    "pk": 4,
+    "fields": {
+      "isbn": "978-0-141-43950-9",
+      "title": "Les Misérables",
+      "year_published": 1862,
+      "pubid": 3,
+      "description": "Un chef-d'œuvre de la littérature française qui suit Jean Valjean dans sa quête de rédemption.",
+      "notes": "Edition française",
+      "subject": "Littérature classique",
+      "comments": "Une œuvre majeure de Victor Hugo",
+      "authors": [4]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 5,
+    "fields": {
+      "isbn": "978-0-141-43949-3",
+      "title": "Pride and Prejudice",
+      "year_published": 1813,
+      "pubid": 1,
+      "description": "Une histoire d'amour et de préjugés dans l'Angleterre du XIXe siècle.",
+      "notes": "Edition annotée",
+      "subject": "Romance classique",
+      "comments": "Le chef-d'œuvre de Jane Austen",
+      "authors": [5]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 6,
+    "fields": {
+      "isbn": "978-0-141-43948-6",
+      "title": "War and Peace",
+      "year_published": 1869,
+      "pubid": 2,
+      "description": "Une fresque épique de la société russe pendant les guerres napoléoniennes.",
+      "notes": "Edition intégrale",
+      "subject": "Histoire",
+      "comments": "L'œuvre majeure de Tolstoï",
+      "authors": [6]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 7,
+    "fields": {
+      "isbn": "978-0-141-43947-9",
+      "title": "Great Expectations",
+      "year_published": 1861,
+      "pubid": 4,
+      "description": "L'histoire du jeune Pip et de son ascension sociale dans l'Angleterre victorienne.",
+      "notes": "Edition illustrée",
+      "subject": "Roman social",
+      "comments": "Un des meilleurs romans de Dickens",
+      "authors": [7]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 8,
+    "fields": {
+      "isbn": "978-0-141-43946-2",
+      "title": "The Great Gatsby",
+      "year_published": 1925,
+      "pubid": 5,
+      "description": "Une exploration de l'American Dream dans les années folles.",
+      "notes": "Edition critique",
+      "subject": "Fiction moderne",
+      "comments": "Le chef-d'œuvre de Fitzgerald",
+      "authors": [8]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 9,
+    "fields": {
+      "isbn": "978-0-141-43945-5",
+      "title": "Moby Dick",
+      "year_published": 1851,
+      "pubid": 1,
+      "description": "L'obsession du capitaine Achab pour la baleine blanche.",
+      "notes": "Edition maritime",
+      "subject": "Aventure",
+      "comments": "Un classique de la littérature américaine",
+      "authors": [9]
+    }
+  },
+  {
+    "model": "api.title",
+    "pk": 10,
+    "fields": {
+      "isbn": "978-0-141-43944-8",
+      "title": "The Old Man and the Sea",
+      "year_published": 1952,
+      "pubid": 2,
+      "description": "Un vieux pêcheur cubain lutte contre un énorme marlin.",
+      "notes": "Edition Pulitzer",
+      "subject": "Fiction moderne",
+      "comments": "Prix Pulitzer 1953",
+      "authors": [11]
+    }
   }
 ]

@@ -37,11 +37,11 @@ class Title(models.Model):
     title = models.CharField(max_length=255)
     year_published = models.SmallIntegerField()
     pubid = models.ForeignKey(Publishers, on_delete=models.CASCADE, related_name='titles')
-    description = models.CharField(max_length=50)
-    notes = models.CharField(max_length=50, blank=True, null=True)
-    subject = models.CharField(max_length=50, blank=True, null=True)
+    description = models.TextField()  
+    notes = models.TextField(blank=True, null=True)  
+    subject = models.CharField(max_length=100, default='Non catégorisé')  # Ajout d'une valeur par défaut
     comments = models.TextField(blank=True, null=True)
-    cover_image = models.ImageField(upload_to='book_covers/', null=True, blank=True)  
+    cover_image = models.ImageField(upload_to='book_covers/', null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name='titles')
 
     def __str__(self):
@@ -51,9 +51,7 @@ class Title(models.Model):
         indexes = [
             models.Index(fields=['title']),
             models.Index(fields=['isbn']),
-            models.Index(fields=['year_published']),
         ]
-
 
 class UserManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password=None, **extra_fields):

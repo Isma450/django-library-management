@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { SignupForm } from "./pages/auth/Signup";
 import { SigninForm } from "./pages/auth/Signin";
+import { Reservations } from "./pages/Rerservation";
 import { Books } from "./pages/Books";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
@@ -22,6 +23,7 @@ function App() {
               <Route path="/signup" element={<SignupForm />} />
               <Route path="/signin" element={<SigninForm />} />
               <Route path="/books" element={<Books />} />
+              <Route path="/reservations" element={<Reservations />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
