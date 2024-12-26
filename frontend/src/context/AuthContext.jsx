@@ -18,6 +18,10 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  const checkAdmin = () => {
+    return user?.email === "admin@ismail.com";
+  };
+
   const checkAuth = async () => {
     const token = localStorage.getItem("token");
     console.log("Token trouvé:", token ? "oui" : "non");
@@ -122,6 +126,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         loading,
         isAuthenticated,
+        isAdmin: checkAdmin(),
       }}
     >
       {!loading && children}
