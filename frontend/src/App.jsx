@@ -9,7 +9,7 @@ import { Books } from "./pages/Books";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
 
 function App() {
   return (
