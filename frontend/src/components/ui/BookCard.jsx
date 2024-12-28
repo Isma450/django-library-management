@@ -37,14 +37,16 @@ export const BookCard = ({ book, index, hovered, setHovered, onAlert }) => {
     if (!canReserveMore()) {
       onAlert({
         type: "error",
-        message: "Vous ne pouvez pas réserver plus de 3 livres à la fois",
+        message: "Vous ne pouvez pas réserver plus de 3 livres à la fois.",
       });
       return;
     }
 
     setReservationLoading(true);
+
     try {
       await api.post(`/books/${bookId}/reserver/`);
+
       setReservationSuccess(true);
       await fetchUserReservations();
       onAlert({
@@ -53,10 +55,78 @@ export const BookCard = ({ book, index, hovered, setHovered, onAlert }) => {
       });
       setTimeout(() => setReservationSuccess(false), 2000);
     } catch (error) {
-      onAlert({
-        type: "error",
-        message: "Erreur lors de la réservation",
-      });
+      if (error.response?.data) {
+        const backendData = error.response.data;
+
+        if (backendData.detail) {
+          if (backendData.detail.includes("3 active reservations")) {
+            onAlert({
+              type: "error",
+              message:
+                "Vous ne pouvez pas réserver plus de 3 livres à la fois.",
+            });
+          } else if (backendData.detail.includes("already reserved")) {
+            onAlert({
+              type: "error",
+              message: "Ce livre est déjà réservé par vous.",
+            });
+          } else {
+            onAlert({
+              type: "error",
+              message: backendData.detail,
+            });
+          }
+        } else if (backendData.non_field_errors?.length) {
+          const message = backendData.non_field_errors[0];
+          if (message.includes("3 active reservations")) {
+            onAlert({
+              type: "error",
+              message:
+                "Vous ne pouvez pas réserver plus de 3 livres à la fois.",
+            });
+          } else if (message.includes("already reserved")) {
+            onAlert({
+              type: "error",
+              message: "Ce livre est déjà réservé par vous.",
+            });
+          } else {
+            onAlert({
+              type: "error",
+              message,
+            });
+          }
+        } else if (Array.isArray(backendData) && backendData.length > 0) {
+          const firstMessage = backendData[0];
+          if (firstMessage.includes("already reserved")) {
+            onAlert({
+              type: "error",
+              message: "Ce livre est déjà réservé par vous.",
+            });
+          } else if (firstMessage.includes("3 active reservations")) {
+            onAlert({
+              type: "error",
+              message:
+                "Vous ne pouvez pas réserver plus de 3 livres à la fois.",
+            });
+          } else {
+            onAlert({
+              type: "error",
+              message: firstMessage,
+            });
+          }
+        } else {
+          onAlert({
+            type: "error",
+            message: "Erreur lors de la réservation (réponse inconnue)",
+          });
+        }
+      } else {
+        onAlert({
+          type: "error",
+          message: "Erreur réseau ou serveur injoignable.",
+        });
+      }
+
       console.error("Erreur de réservation:", error);
     } finally {
       setReservationLoading(false);

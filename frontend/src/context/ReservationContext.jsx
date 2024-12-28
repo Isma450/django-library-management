@@ -1,6 +1,9 @@
+// src/context/ReservationContext.jsx
+
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../services/api";
 import PropTypes from "prop-types";
+import { useAuth } from "./AuthContext";
 
 const ReservationContext = createContext();
 
@@ -9,7 +12,15 @@ export const ReservationProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { user } = useAuth();
+
   const fetchUserReservations = async () => {
+    if (!user) {
+      setUserReservations([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -25,7 +36,8 @@ export const ReservationProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUserReservations();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const canReserveMore = () => {
     return userReservations.length < 3;
@@ -45,6 +57,7 @@ export const ReservationProvider = ({ children }) => {
     try {
       setLoading(true);
       await api.delete(`/reservations/${reservationId}/`);
+      // Après suppression, on recharge
       await fetchUserReservations();
       return true;
     } catch (error) {

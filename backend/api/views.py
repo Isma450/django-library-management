@@ -13,7 +13,13 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 
 from .models import Author, Title, Publishers, Reservation, User
-from .serializers import AuthorSerializer, PublishersSerializer, TitleSerializer, UserSerializer, ReservationSerializer
+from .serializers import (
+    AuthorSerializer,
+    PublishersSerializer,
+    TitleSerializer,
+    UserSerializer,
+    ReservationSerializer,
+)
 from .forms import CustomUserCreationForm
 
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -23,30 +29,33 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-# PAGE D'ACCUEIL - accessible à tous
+# PAGE D'ACCUEIL
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@cache_page(60 * 15)
+@cache_page(60 * 15) 
 def accueil(request):
     return Response({"message": "Welcome to the Online Library API"}, status=status.HTTP_200_OK)
 
 
-# LISTE DES LIVRES 
+# LISTE DES LIVRES
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@cache_page(60 * 15)
+@cache_page(60 * 15)  
 def liste_livres(request):
     cache_key = 'all_books_list'
     livres = cache.get(cache_key)
     if livres is None:
         livres = Title.objects.all()
-        cache.set(cache_key, livres, 300)
+        cache.set(cache_key, livres, 300)  
 
     serializer = TitleSerializer(livres, many=True)
-    # Si l'utilisateur est authentifié, on indique aussi ses livres réservés
+
     livres_reserves_data = []
     if request.user.is_authenticated:
-        livres_reserves = Title.objects.filter(reservations__user=request.user, reservations__returned_at__isnull=True)
+        livres_reserves = Title.objects.filter(
+            reservations__user=request.user,
+            reservations__returned_at__isnull=True
+        )
         serializer_reserves = TitleSerializer(livres_reserves, many=True)
         livres_reserves_data = serializer_reserves.data
 
@@ -59,18 +68,23 @@ def liste_livres(request):
 # MES RESERVATIONS
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-@cache_page(60 * 15)
 def mes_reservations(request):
+
     cache_key = f'reservations_{request.user.id}'
-    reservations = cache.get(cache_key)
-    if reservations is None:
-        reservations = Reservation.objects.filter(user=request.user)
-        cache.set(cache_key, reservations, 300)
+    reservations_cached = cache.get(cache_key)
+
+    if reservations_cached is None:
+        reservations_qs = Reservation.objects.filter(user=request.user)
+        cache.set(cache_key, reservations_qs, 300)  
+        reservations = reservations_qs
+    else:
+        reservations = reservations_cached
+
     serializer = ReservationSerializer(reservations, many=True)
     return Response({'reservations': serializer.data}, status=status.HTTP_200_OK)
 
 
-# LISTE DES AUTEURS 
+# LISTE DES AUTEURS
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @cache_page(60 * 15)
@@ -84,13 +98,13 @@ def liste_auteurs(request):
     return Response({'authors': serializer.data}, status=status.HTTP_200_OK)
 
 
-# LIVRES PAR AUTEUR 
+# LIVRES PAR AUTEUR
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @cache_page(60 * 15)
 def livres_par_auteur(request, au_id):
     auteur = get_object_or_404(Author, pk=au_id)
-    livres = auteur.titles.all()  
+    livres = auteur.titles.all()
     serializer = TitleSerializer(livres, many=True)
     return Response({
         'author': AuthorSerializer(auteur).data,
@@ -98,7 +112,7 @@ def livres_par_auteur(request, au_id):
     }, status=status.HTTP_200_OK)
 
 
-# LISTE DES EDITEURS - 
+# LISTE DES EDITEURS
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @cache_page(60 * 15)
@@ -112,7 +126,7 @@ def liste_editeurs(request):
     return Response({'publishers': serializer.data}, status=status.HTTP_200_OK)
 
 
-# DETAIL D'UN LIVRE - 
+# DETAIL D'UN LIVRE
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @cache_page(60 * 15)
@@ -122,13 +136,15 @@ def detail_livre(request, id):
     return Response({'book': serializer.data}, status=status.HTTP_200_OK)
 
 
-# RESERVER UN LIVRE - 
+# RESERVER UN LIVRE
 @api_view(['POST'])
 def reserver_livre(request, title_id):
     if not request.user.is_authenticated:
         return Response({"error": "You must be logged in to reserve a book."}, status=status.HTTP_401_UNAUTHORIZED)
+
     livre = get_object_or_404(Title, pk=title_id)
 
+   
     if Reservation.objects.filter(user=request.user, book=livre, returned_at__isnull=True).exists():
         raise ValidationError("You have already reserved this book.")
 
@@ -137,6 +153,10 @@ def reserver_livre(request, title_id):
         raise ValidationError("You already have 3 active reservations. Please return a book before reserving another.")
 
     Reservation.objects.create(user=request.user, book=livre)
+
+    cache_key = f'reservations_{request.user.id}'
+    cache.delete(cache_key)
+
     return Response({
         "message": f"You have successfully reserved the book: {livre.title}."
     }, status=status.HTTP_201_CREATED)
@@ -169,20 +189,14 @@ def connexion(request):
             return Response({"error": "Incorrect email or password."}, status=status.HTTP_400_BAD_REQUEST)
     return Response({"message": "Send a POST request with 'username' and 'password'."}, status=status.HTTP_200_OK)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_profile(request):
-    """Récupérer les informations de l'utilisateur connecté"""
+
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def deconnexion(request):
-#     def post(self, request):
-#         response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
-#         response.delete_cookie("refresh_token")
-#         return response
 
 class LogoutView(APIView):
     def post(self, request):
@@ -191,13 +205,13 @@ class LogoutView(APIView):
         return response
 
 
-
 # VIEWSETS
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     authentication_classes = [JWTAuthentication]
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [permissions.IsAdminUser()]
@@ -215,8 +229,8 @@ class PublishersViewSet(viewsets.ModelViewSet):
     queryset = Publishers.objects.all()
     serializer_class = PublishersSerializer
     authentication_classes = [JWTAuthentication]
+
     def get_permissions(self):
-        print(self.action, self.request.user.is_authenticated, self.request.user.is_staff)
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [permissions.IsAdminUser()]
         return [permissions.AllowAny()]
@@ -247,6 +261,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 
         reservation = Reservation.objects.create(user=request.user, book=title)
         serializer = ReservationSerializer(reservation)
+
+        cache_key = f'reservations_{request.user.id}'
+        cache.delete(cache_key)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -270,12 +288,11 @@ class ReservationViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            # Créer une réservation = utilisateur authentifié requis
             return [permissions.IsAuthenticated()]
         elif self.action in ['update', 'partial_update', 'destroy']:
-            # Modifier ou supprimer la réservation : user authentifié
+          
             return [permissions.IsAuthenticated()]
-        # Lister toutes les réservations = admin (cas d'usage interne)
+     
         return [permissions.IsAdminUser()]
 
     def perform_create(self, serializer):
@@ -285,13 +302,20 @@ class ReservationViewSet(viewsets.ModelViewSet):
             raise ValidationError("You already have 3 active reservations.")
         serializer.save(user=user)
 
+        cache_key = f'reservations_{user.id}'
+        cache.delete(cache_key)
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.user != request.user and not request.user.is_superuser:
             raise ValidationError("You cannot cancel this reservation because it does not belong to you.")
-        self.perform_destroy(instance)
-        return Response({"message": "Reservation successfully canceled."}, status=status.HTTP_200_OK)
 
+        self.perform_destroy(instance)
+
+        cache_key = f'reservations_{instance.user.id}'
+        cache.delete(cache_key)
+
+        return Response({"message": "Reservation successfully canceled."}, status=status.HTTP_200_OK)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -302,18 +326,16 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         access_token = data.get("access")
         refresh_token = data.get("refresh")
 
-        # Ajouter le refresh token au cookie
         res = Response({"access": access_token}, status=status.HTTP_200_OK)
         res.set_cookie(
             key="refresh_token",
             value=refresh_token,
             httponly=True,
-            secure=True,  
-            samesite="Strict",  
-            max_age=86400,  
+            secure=True,
+            samesite="Strict",
+            max_age=86400, 
         )
         return res
-
 
 
 class RefreshAccessTokenView(APIView):
@@ -326,7 +348,6 @@ class RefreshAccessTokenView(APIView):
         try:
             token = RefreshToken(refresh_token)
             access_token = str(token.access_token)
-
             return Response({"access": access_token}, status=status.HTTP_200_OK)
-        except Exception as e:
+        except Exception:
             return Response({"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
