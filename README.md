@@ -90,61 +90,62 @@ cd bibliotheque-api
 python -m venv venv
 source venv/bin/activate  # Sur Windows : venv\Scripts\activate
 ```
-♻️ Installez les dépendances :
+### ♻️ Installez les dépendances :
 ```
 pip install -r requirements.txt
 ```
-🔢 Configurez les variables d'environnement :
+### 🔢 Configurez les variables d'environnement :
 Créez un fichier .env à la racine et configurez-le comme suit :
 ```
 DJANGO_SECRET_KEY=your_secret_key
 REDIS_URL=redis://localhost:6379/1
 ```
-💳 Configurez la base de données :
+### 💳 Configurez la base de données :
 Mettez à jour DATABASES dans settings.py pour correspondre à votre configuration PostgreSQL.
 
-➕ Appliquez les migrations :
+### ➕ Appliquez les migrations :
 ```
 python manage.py makemigrations
 python manage.py migrate
 ```
-🎒 Chargez des données d'exemple (optionnel) :
+### 🎒 Chargez des données d'exemple (optionnel) :
 ```
 python manage.py loaddata library_fixture.json
 ```
-🛡️ Lancez le serveur de développement :
+### 🛡️ Lancez le serveur de développement :
 ```
 python manage.py runserver
 ```
 Accédez à l'API ici : http://127.0.0.1:8000/
 
-📊 Exécuter les Tests
+### 📊 Exécuter les Tests
 Pour vérifier que tout fonctionne correctement :
 ```
 python manage.py test
 ```
-🛡️ Déploiement
+### 🛡️ Déploiement
 Pour déployer en production, utilisez Gunicorn et un serveur web comme Nginx :
 
-🔄 Installez Gunicorn :
+### 🔄 Installez Gunicorn :
 ```
 pip install gunicorn
 ```
-🔧 Lancez Gunicorn :
+### 🔧 Lancez Gunicorn :
 ```
 gunicorn backend.wsgi:application --bind 0.0.0.0:8000
 ```
-✨ Projet Frontend - Système de Gestion de Bibliothèque ✨
-🖥️ Technologies Utilisées
-⚛️ React (18.x) : Pour gérer les composants et l'interface utilisateur.
-🚀 Vite : Pour un démarrage rapide et le bundling.
-🌀 TailwindCSS (3.x) : Pour le styling rapide.
-📦 Axios : Pour les appels API.
-🔄 React Router DOM : Pour le routage.
-🌟 Lucide Icons : Icônes modernes et élégantes.
-🛠️ DaisyUI : Composants pré-stylisés pour une UI efficace.
+# ✨ Projet Frontend - Système de Gestion de Bibliothèque ✨
+## 🖥️ Technologies Utilisées
+ - ⚛️ React (18.x) : Pour gérer les composants et l'interface utilisateur.
+ - 🚀 Vite : Pour un démarrage rapide et le bundling.
+ - 🌀 TailwindCSS (3.x) : Pour le styling rapide.
+ - 📦 Axios : Pour les appels API.
+ - 🔄 React Router DOM : Pour le routage.
+ - 🌟 Lucide Icons : Icônes modernes et élégantes.
+ - 🛠️ DaisyUI : Composants pré-stylisés pour une UI efficace.
 
-⚙️ Installation du Frontend
+## ⚙️ Installation du Frontend
+
 1. Clonez le projet :
 ```
 git clone https://github.com/votre-utilisateur/library-management-frontend.git
@@ -155,21 +156,26 @@ cd library-management-frontend
 npm install
 ```
 3. Configurez .env :
+   
 Ajoutez un fichier .env :
+
 ```
 VITE_API_BASE_URL=http://localhost:8000/api/v1
 ```
 4. Démarrez le serveur de développement :
+   
 ```
 npm run dev
 ```
 Accédez au projet ici : http://localhost:5173/
 
 5. Construisez pour la production :
+   
 ```
 npm run build
 ```
-📂 Structure des Dossiers:
+## 📂 Structure des Dossiers:
+
 ```
 📂 src
  ┣ 📂 components
@@ -183,16 +189,13 @@ npm run build
  ┣ 📂 services
  ┣ 📂 assets
 ```
-✨ Contributeurs
+## ✨ Contributeurs
 👤 Ismail Bouloukt
 
-📃 Licence
+## 📃 Licence
 Ce projet est sous licence MIT.
 
 Bon codage ! 🚀✨
-
-Copier le code
-
 
 
 
