@@ -10,7 +10,7 @@ export const ProtectedAdminRoute = ({ children }) => {
     return <div>Chargement...</div>;
   }
 
-  if (!user || user.email !== "admin@ismail.com") {
+  if (!user || user.email !== import.meta.env.VITE_ADMIN_EMAIL) {
     return <Navigate to="/signin" replace />;
   }
 

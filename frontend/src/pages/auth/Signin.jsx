@@ -20,7 +20,7 @@ export function SigninForm() {
       ...prev,
       [id]: value,
     }));
-    // Réinitialiser l'erreur quand l'utilisateur tape
+
     if (error) setError(null);
   };
 
@@ -38,7 +38,14 @@ export function SigninForm() {
 
     try {
       await login(credentials);
-      navigate("/");
+      if (
+        credentials.email === import.meta.env.VITE_ADMIN_EMAIL &&
+        credentials.password === import.meta.env.VITE_ADMIN_PASSWORD
+      ) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       setError(
         error.response?.data?.detail ||

@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAdmin = () => {
-    return user?.email === "admin@ismail.com";
+    return user?.email === import.meta.env.VITE_ADMIN_EMAIL;
   };
 
   const checkAuth = async () => {
