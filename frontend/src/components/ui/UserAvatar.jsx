@@ -1,15 +1,14 @@
-// src/components/ui/UserAvatar.jsx
 import { useState, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 
 export const UserAvatar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, logout } = useAuth(); // Récupérer user directement du contexte
+  const { user, logout } = useAuth();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  if (!user) return null; // Ne rien afficher si pas d'utilisateur
+  if (!user) return null;
 
   return (
     <div className="relative">

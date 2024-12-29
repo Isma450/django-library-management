@@ -1,4 +1,3 @@
-// src/components/ui/BookCard.jsx
 import { motion } from "framer-motion";
 import { useState } from "react";
 import PropTypes from "prop-types";
@@ -6,7 +5,6 @@ import { useAuth } from "../../context/AuthContext";
 import { useReservations } from "../../context/ReservationContext";
 import api from "../../services/api";
 
-// src/components/ui/BookCard.jsx
 const formatTitleToImagePath = (title) => {
   if (!title) return "/images/default-book.jpg";
 

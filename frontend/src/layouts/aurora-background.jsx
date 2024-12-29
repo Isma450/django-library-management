@@ -1,4 +1,3 @@
-// src/components/ui/aurora-background.jsx
 import { cn } from "../lib/utils";
 import PropTypes from "prop-types";
 

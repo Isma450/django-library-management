@@ -1,4 +1,3 @@
-// src/components/ui/card.jsx
 import PropTypes from "prop-types";
 const Card = ({ className, ...props }) => {
   return (

@@ -1,4 +1,3 @@
-// src/pages/Books.jsx
 import { useState, useEffect } from "react";
 import { BookCard } from "../components/ui/BookCard";
 import { Alert } from "../components/ui/Alert";

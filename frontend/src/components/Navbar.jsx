@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Menu, MenuItem, NavLink } from "./ui/navbar-menu";

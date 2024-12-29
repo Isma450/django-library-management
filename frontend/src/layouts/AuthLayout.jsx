@@ -1,4 +1,3 @@
-// src/components/layouts/AuthLayout.jsx
 import PropTypes from "prop-types";
 
 export const AuthLayout = ({ children }) => {

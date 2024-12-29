@@ -1,4 +1,3 @@
-// src/components/ui/Label.jsx
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import PropTypes from "prop-types";
