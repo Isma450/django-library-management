@@ -1,3 +1,5 @@
+// src/pages/admin/AdminDashboard.jsx
+
 import { useState, useEffect } from "react";
 import api from "../../services/api";
 import {
@@ -56,30 +58,23 @@ export const AdminDashboard = () => {
     }
   };
 
-  // Charger la liste correspondante à l’onglet actif
   const fetchData = async (tab) => {
     try {
-      let response;
       switch (tab) {
         case "books":
-          response = await api.get("/titles/");
-          setBooks(response.data);
+          setBooks((await api.get("/titles/")).data);
           break;
         case "authors":
-          response = await api.get("/authors/");
-          setAuthors(response.data);
+          setAuthors((await api.get("/authors/")).data);
           break;
         case "publishers":
-          response = await api.get("/publishers/");
-          setPublishers(response.data);
+          setPublishers((await api.get("/publishers/")).data);
           break;
         case "users":
-          response = await api.get("/users/");
-          setUsers(response.data);
+          setUsers((await api.get("/users/")).data);
           break;
         case "reservations":
-          response = await api.get("/reservations/");
-          setReservations(response.data);
+          setReservations((await api.get("/reservations/")).data);
           break;
         default:
           break;
@@ -102,7 +97,7 @@ export const AdminDashboard = () => {
 
   const handleAddNew = () => {
     setIsEditMode(false);
-    setEditItem(null);
+    setEditItem(getDefaultFieldsFor(activeTab));
     setModalOpen(true);
   };
 
@@ -133,37 +128,19 @@ export const AdminDashboard = () => {
   const createItem = async () => {
     switch (activeTab) {
       case "books":
-        await api.post("/titles/", {
-          title: editItem?.title,
-          isbn: editItem?.isbn,
-          year_published: editItem?.year_published,
-        });
+        await api.post("/titles/", editItem);
         break;
       case "authors":
-        await api.post("/authors/", {
-          author: editItem?.author,
-          year_born: editItem?.year_born,
-        });
+        await api.post("/authors/", editItem);
         break;
       case "publishers":
-        await api.post("/publishers/", {
-          name: editItem?.name,
-          address: editItem?.address,
-        });
+        await api.post("/publishers/", editItem);
         break;
       case "users":
-        await api.post("/users/", {
-          first_name: editItem?.first_name,
-          last_name: editItem?.last_name,
-          email: editItem?.email,
-          password: editItem?.password || "MotDePasse123",
-        });
+        await api.post("/users/", editItem);
         break;
       case "reservations":
-        await api.post("/reservations/", {
-          user: editItem?.user,
-          book: editItem?.book,
-        });
+        await api.post("/reservations/", editItem);
         break;
       default:
         break;
@@ -175,60 +152,61 @@ export const AdminDashboard = () => {
     if (activeTab === "books") itemId = editItem?.title_id;
     if (activeTab === "authors") itemId = editItem?.au_id;
     if (activeTab === "publishers") itemId = editItem?.pubid;
-
-    switch (activeTab) {
-      case "books":
-        await api.patch(`/titles/${itemId}/`, {
-          title: editItem?.title,
-          isbn: editItem?.isbn,
-          year_published: editItem?.year_published,
-        });
-        break;
-      case "authors":
-        await api.patch(`/authors/${itemId}/`, {
-          author: editItem?.author,
-          year_born: editItem?.year_born,
-        });
-        break;
-      case "publishers":
-        await api.patch(`/publishers/${itemId}/`, {
-          name: editItem?.name,
-          address: editItem?.address,
-        });
-        break;
-      case "users":
-        await api.patch(`/users/${itemId}/`, {
-          first_name: editItem?.first_name,
-          last_name: editItem?.last_name,
-          email: editItem?.email,
-        });
-        break;
-      case "reservations":
-        await api.patch(`/reservations/${itemId}/`, {
-          user: editItem?.user,
-          book: editItem?.book,
-          returned_at: editItem?.returned_at || null,
-        });
-        break;
-      default:
-        break;
-    }
+    await api.patch(`/${activeTab}/${itemId}/`, editItem);
   };
 
   const handleChange = (e) => {
-    setEditItem({
-      ...editItem,
-      [e.target.name]: e.target.value,
-    });
+    setEditItem({ ...editItem, [e.target.name]: e.target.value });
+  };
+
+  const getDefaultFieldsFor = (tab) => {
+    switch (tab) {
+      case "books":
+        return {
+          title: "",
+          isbn: "",
+          year_published: "",
+          pubid: "",
+          description: "",
+        };
+      case "authors":
+        return {
+          author: "",
+          year_born: "",
+        };
+      case "publishers":
+        return {
+          name: "",
+          address: "",
+          company_name: "",
+          city: "",
+          state: "",
+          zip: "",
+          telephone: "",
+          fax: "",
+          comments: "",
+        };
+      case "users":
+        return {
+          first_name: "",
+          last_name: "",
+          email: "",
+          password: "",
+        };
+      case "reservations":
+        return {
+          user: "",
+          book: "",
+          returned_at: "",
+        };
+      default:
+        return {};
+    }
   };
 
   const renderFormFields = () => {
     if (!editItem) {
-      return (
-        <div className="text-sm text-gray-500">
-          Aucun formulaire disponible pour le moment.
-        </div>
-      );
+      return <div className="text-sm text-gray-500">Aucun formulaire...</div>;
     }
     switch (activeTab) {
       case "books":
@@ -238,7 +216,7 @@ export const AdminDashboard = () => {
               Titre :
               <input
                 name="title"
-                value={editItem.title || ""}
+                value={editItem.title}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -247,17 +225,36 @@ export const AdminDashboard = () => {
               ISBN :
               <input
                 name="isbn"
-                value={editItem.isbn || ""}
+                value={editItem.isbn}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
             </label>
             <label className="block mb-2">
-              Année de publication :
+              Année :
               <input
                 name="year_published"
                 type="number"
-                value={editItem.year_published || ""}
+                value={editItem.year_published}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              Éditeur (pubid) :
+              <input
+                name="pubid"
+                type="number"
+                value={editItem.pubid}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              Description :
+              <textarea
+                name="description"
+                value={editItem.description}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -271,7 +268,7 @@ export const AdminDashboard = () => {
               Nom de l&apos;auteur :
               <input
                 name="author"
-                value={editItem.author || ""}
+                value={editItem.author}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -281,7 +278,7 @@ export const AdminDashboard = () => {
               <input
                 name="year_born"
                 type="number"
-                value={editItem.year_born || ""}
+                value={editItem.year_born}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -295,7 +292,7 @@ export const AdminDashboard = () => {
               Nom :
               <input
                 name="name"
-                value={editItem.name || ""}
+                value={editItem.name}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -304,7 +301,70 @@ export const AdminDashboard = () => {
               Adresse :
               <input
                 name="address"
-                value={editItem.address || ""}
+                value={editItem.address}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              Company Name :
+              <input
+                name="company_name"
+                value={editItem.company_name || ""}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              City :
+              <input
+                name="city"
+                value={editItem.city || ""}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              State :
+              <input
+                name="state"
+                value={editItem.state || ""}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              Zip :
+              <input
+                name="zip"
+                value={editItem.zip || ""}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              Téléphone :
+              <input
+                name="telephone"
+                value={editItem.telephone || ""}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              Fax :
+              <input
+                name="fax"
+                value={editItem.fax || ""}
+                onChange={handleChange}
+                className="border p-1 w-full"
+              />
+            </label>
+            <label className="block mb-2">
+              Commentaires :
+              <textarea
+                name="comments"
+                value={editItem.comments || ""}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -318,7 +378,7 @@ export const AdminDashboard = () => {
               Prénom :
               <input
                 name="first_name"
-                value={editItem.first_name || ""}
+                value={editItem.first_name}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -327,7 +387,7 @@ export const AdminDashboard = () => {
               Nom :
               <input
                 name="last_name"
-                value={editItem.last_name || ""}
+                value={editItem.last_name}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -337,19 +397,18 @@ export const AdminDashboard = () => {
               <input
                 name="email"
                 type="email"
-                value={editItem.email || ""}
+                value={editItem.email}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
             </label>
-            {/* Si on est en mode création (pas d'édition), on propose de définir un password */}
             {!isEditMode && (
               <label className="block mb-2">
                 Mot de passe :
                 <input
                   name="password"
                   type="password"
-                  value={editItem.password || ""}
+                  value={editItem.password}
                   onChange={handleChange}
                   className="border p-1 w-full"
                 />
@@ -364,7 +423,8 @@ export const AdminDashboard = () => {
               ID Utilisateur :
               <input
                 name="user"
-                value={editItem.user || ""}
+                type="number"
+                value={editItem.user}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
@@ -373,13 +433,14 @@ export const AdminDashboard = () => {
               ID Livre :
               <input
                 name="book"
-                value={editItem.book || ""}
+                type="number"
+                value={editItem.book}
                 onChange={handleChange}
                 className="border p-1 w-full"
               />
             </label>
             <label className="block mb-2">
-              Date de retour :
+              Date de retour (optionnel) :
               <input
                 type="datetime-local"
                 name="returned_at"
@@ -402,8 +463,6 @@ export const AdminDashboard = () => {
           {alertMessage}
         </div>
       )}
-
-      {/* Header avec stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center justify-between">
@@ -442,8 +501,6 @@ export const AdminDashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Navigation des onglets */}
       <div className="flex space-x-4 p-4 bg-white shadow mb-4">
         {["books", "authors", "publishers", "users", "reservations"].map(
           (tab) => (
@@ -459,8 +516,6 @@ export const AdminDashboard = () => {
           )
         )}
       </div>
-
-      {/* Table principale */}
       <div className="p-4">
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex justify-between items-center mb-4">
@@ -637,8 +692,6 @@ export const AdminDashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Modal pour Add/Edit */}
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-md w-full max-w-md">
